@@ -3,22 +3,29 @@
 # Import do ShellBot
 source ShellBot.sh
 bot_token=""
-
 # Inicia o bot
 ShellBot.init --token "$bot_token"
+
+# Variaveis globais
+ARQUIVOLOG="mxlr.log"
 
 # Mensagem de welcome
 mostrar_mensagem(){
     local msg
-
     msg="[@${message_new_chat_member_username[$id]:-null}]\n"
     msg+="Falai *${message_new_chat_member_first_name[$id]}*"'!!\n\n'
     msg+="Eu sou o robô [@$(ShellBot.username)]"
 
     # Enviar mendagem de boas vindas.
-    ShellBot.sendMessage --chat_id ${message_chat_id[$id]} \
-                                                        --text "$(echo -e $msg)"
-                                                        --parse_mode markdown
+    ShellBot.sendMessage --chat_id ${message_chat_id[$id]} --text "$(echo -e $msg)" --parse_mode markdown
+    return 0
+}
+
+# Mensagem de erro e log
+mensagem_log(){
+    ShellBot.sendMessage --chat_id ${message_chat_id[$id]} --text "$(echo -e $1)" --parse_mode markdown
+    echo $1 >> ARQUIVOLOG
+    return 0
 }
 
 while : ; do
@@ -29,13 +36,15 @@ while : ; do
     for id in $(ShellBot.ListUpdates) ; do
         # Inicio thread
         (
-            echo -e "Executou" >> mxlr.log
             [[ ${message_new_chat_member_id[$id]} ]] && mostrar_mensagem
 
             # Menu
             case ${message_text[$id]} in
+                "/start")
+                    mostrar_mensagem
+                ;;
                 *)
-                    
+                    mensagem_log "Opcao inválida."
                 ;;
             esac
         ) &
