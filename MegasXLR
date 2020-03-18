@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Import do ShellBot
+source ShellBot.sh
+bot_token=""
+
+# Inicia o bot
+ShellBot.init --token "$bot_token"
+
+While : ; do
+    # Obter atualizações
+    ShellBot.getUpdates --limit 100 --offset $(ShellBot.OffsetNext) --timeout 30
+
+    # Listar o indice das atualizações
+    for id in $(ShellBot.ListUpdates) ; do
+    
+    done
+
+done
